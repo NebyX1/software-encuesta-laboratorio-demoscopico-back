@@ -1,0 +1,24 @@
+Paso 1: Instalar virtualenv
+    >pip install virtualenv
+
+Paso 2: Crear el entorno virutal en la carpeta del proyecto:
+    >python -m virtualenv env
+
+Paso 3: Para activar el entorno virtual para empezar a trabajar, solo hay que escribir en la carpeta raíz:
+    >env\Scripts\activate
+
+Paso 4: Instalar todas las librerías y dependencias que usaremos dentro de nuestro entorno virtual
+-Escribir el siguiente comando: 
+    >pip install -r requirements.txt
+
+Paso 5: Correr el servidor de prueba
+    >python app.py
+
+Paso 6: Inicializar base de datos
+    >flask --app app.py db init
+
+Paso 7: Realizar modificaciones en la migración
+    >flask --app app.py db migrate -m "Replace models with User, ValidToken, SurveyResponse"
+
+Paso 8: Efectivizar la migración:
+    >flask --app app.py db upgrade

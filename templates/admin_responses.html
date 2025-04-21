@@ -1,0 +1,238 @@
+{% extends 'layout.html' %}
+
+{% block title %}Respuestas - Laboratorio Demoscópico{% endblock %}
+
+{% block content %}
+<div class="py-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-medium text-gray-800">Respuestas de Encuestas</h1>
+        
+        <div class="flex gap-2">
+            <a href="{{ url_for('admin_dashboard') }}" class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Dashboard
+            </a>
+            <a href="{{ url_for('admin_stats') }}" class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Estadísticas
+            </a>
+        </div>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="{% if category == 'success' %}bg-green-50 text-green-700{% elif category == 'danger' %}bg-red-50 text-red-700{% else %}bg-blue-50 text-blue-700{% endif %} p-3 rounded-md mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Panel de filtros -->
+        <div class="bg-white shadow-sm border border-gray-100 rounded-lg p-6">
+            <h2 class="text-lg font-medium text-gray-700 mb-4">Filtros</h2>
+            
+            <form method="POST" action="{{ url_for('admin_responses') }}" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="genero">Género</label>
+                    <select id="genero" name="genero" class="w-full border border-gray-200 rounded py-2 px-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/30">
+                        <option value="">Todos</option>
+                        {% for option in genero_options %}
+                            <option value="{{ option[0] }}" {% if filters.get('genero') == option[0] %}selected{% endif %}>
+                                {{ option[0] or 'No especificado' }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="edad">Edad</label>
+                    <select id="edad" name="edad" class="w-full border border-gray-200 rounded py-2 px-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/30">
+                        <option value="">Todas</option>
+                        {% for option in edad_options %}
+                            <option value="{{ option[0] }}" {% if filters.get('edad') == option[0] %}selected{% endif %}>
+                                {{ option[0] or 'No especificado' }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="localidad">Localidad</label>
+                    <select id="localidad" name="localidad" class="w-full border border-gray-200 rounded py-2 px-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/30">
+                        <option value="">Todas</option>
+                        {% for option in localidad_options %}
+                            <option value="{{ option[0] }}" {% if filters.get('localidad') == option[0] %}selected{% endif %}>
+                                {{ option[0] or 'No especificado' }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="intendente">Intendente</label>
+                    <select id="intendente" name="intendente" class="w-full border border-gray-200 rounded py-2 px-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/30">
+                        <option value="">Todos</option>
+                        {% for option in intendente_options %}
+                            <option value="{{ option[0] }}" {% if filters.get('intendente') == option[0] %}selected{% endif %}>
+                                {{ option[0] or 'No especificado' }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-primary hover:bg-blue-600 text-white font-medium py-2 px-4 rounded focus:outline-none transition-colors">
+                        Aplicar Filtros
+                    </button>
+                </div>
+                
+                <div>
+                    <a href="{{ url_for('admin_responses') }}" class="block w-full text-center text-sm text-blue-600 hover:underline mt-1">
+                        Limpiar filtros
+                    </a>
+                </div>
+            </form>
+            
+            <hr class="my-6 border-gray-200">
+            
+            <h2 class="text-lg font-medium text-gray-700 mb-4">Exportar Datos</h2>
+            
+            <form method="POST" action="{{ url_for('export_responses') }}" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" for="export_format">Formato</label>
+                    <select id="export_format" name="export_format" class="w-full border border-gray-200 rounded py-2 px-3 text-gray-700 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/30">
+                        <option value="csv">CSV</option>
+                        <option value="json">JSON</option>
+                    </select>
+                </div>
+                
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded focus:outline-none transition-colors">
+                        Exportar Datos
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Tabla de resultados -->
+        <div class="bg-white shadow-sm border border-gray-100 rounded-lg p-6 md:col-span-3">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-medium text-gray-700">Respuestas de Encuesta</h2>
+                <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                    {{ responses|length }} resultados
+                </span>
+            </div>
+            
+            {% if responses %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Género</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edad</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Localidad</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Intendente</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for response in responses %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ response.submission_timestamp.strftime('%d/%m/%Y %H:%M') }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ response.genero or '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ response.edad or '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ response.localidad or '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ response.intendente or '-' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button onclick="toggleDetails('response-{{ response.id }}')" class="text-blue-600 hover:text-blue-900">
+                                            Ver detalles
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr id="response-{{ response.id }}" class="hidden bg-gray-50">
+                                    <td colspan="6" class="px-6 py-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">Balotaje:</p>
+                                                <p class="text-sm text-gray-800">{{ response.balotaje or '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">Estado:</p>
+                                                <p class="text-sm text-gray-800">{{ response.estado or '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">Partido vs Persona:</p>
+                                                <p class="text-sm text-gray-800">{{ response.partido_vs_persona or '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">Percepción Mario:</p>
+                                                <p class="text-sm text-gray-800">{{ response.percepcion_mario or '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">Percepción Daniel:</p>
+                                                <p class="text-sm text-gray-800">{{ response.percepcion_daniel or '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">Problemas:</p>
+                                                <p class="text-sm text-gray-800 break-words">{{ response.problemas or '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">Auditoría:</p>
+                                                <p class="text-sm text-gray-800 break-words">{{ response.auditoria or '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">Teléfono:</p>
+                                                <p class="text-sm text-gray-800">{{ response.telefono or '-' }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">IP:</p>
+                                                <p class="text-sm text-gray-800">{{ response.ip_address or '-' }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-10">
+                    <p class="text-gray-500">No hay respuestas de encuesta disponibles.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleDetails(id) {
+        const element = document.getElementById(id);
+        if (element.classList.contains('hidden')) {
+            element.classList.remove('hidden');
+        } else {
+            element.classList.add('hidden');
+        }
+    }
+</script>
+{% endblock %}

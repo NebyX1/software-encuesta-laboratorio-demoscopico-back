@@ -1,0 +1,64 @@
+# Entorno virtual
+env/
+venv/
+ENV/
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Archivos de Flask
+instance/
+.webassets-cache
+
+# Archivos de SQLAlchemy
+*.sqlite
+*.db
+
+# Archivos de configuración local
+.env
+.flaskenv
+config.local.py
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Archivos de IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Archivos específicos de la aplicación
+database/config.py
+
+# Archivos de migración (opcional, descomenta si no quieres versionar migraciones)
+# migrations/
+
+# Archivos de configuración local
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

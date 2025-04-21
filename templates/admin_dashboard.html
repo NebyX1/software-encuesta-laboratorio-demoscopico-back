@@ -1,0 +1,189 @@
+{% extends 'layout.html' %}
+
+{% block title %}Dashboard Administrativo - Laboratorio Demoscópico{% endblock %}
+
+{% block content %}
+<div class="py-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-medium text-gray-800">Dashboard Administrativo</h1>
+        
+        <div class="flex gap-2">
+            <a href="{{ url_for('admin_stats') }}" class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                Estadísticas
+            </a>
+            <a href="{{ url_for('admin_responses') }}" class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Respuestas
+            </a>
+            <a href="{{ url_for('admin_tokens') }}" class="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                </svg>
+                Tokens
+            </a>
+        </div>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="{% if category == 'success' %}bg-green-50 text-green-700{% elif category == 'danger' %}bg-red-50 text-red-700{% else %}bg-blue-50 text-blue-700{% endif %} p-3 rounded-md mb-4">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Tarjetas de estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white shadow-sm border border-gray-100 rounded-lg p-4">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-50 text-blue-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h2 class="text-sm font-medium text-gray-600">Total de Respuestas</h2>
+                    <p class="text-2xl font-semibold text-gray-800">{{ total_responses }}</p>
+                    <p class="text-xs text-gray-500">{{ responses_today }} hoy</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white shadow-sm border border-gray-100 rounded-lg p-4">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-50 text-green-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h2 class="text-sm font-medium text-gray-600">Tokens Disponibles</h2>
+                    <p class="text-2xl font-semibold text-gray-800">{{ available_tokens }}</p>
+                    <p class="text-xs text-gray-500">{{ total_tokens }} en total</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white shadow-sm border border-gray-100 rounded-lg p-4">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-yellow-50 text-yellow-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h2 class="text-sm font-medium text-gray-600">Tokens Utilizados</h2>
+                    <p class="text-2xl font-semibold text-gray-800">{{ used_tokens }}</p>
+                    <p class="text-xs text-gray-500">{{ "%.1f"|format(used_tokens / total_tokens * 100) if total_tokens > 0 else 0 }}% del total</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Respuestas recientes -->
+    <div class="bg-white shadow-sm border border-gray-100 rounded-lg p-6 mb-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-medium text-gray-700">Respuestas Recientes</h2>
+            <a href="{{ url_for('admin_responses') }}" class="text-sm text-blue-600 hover:underline">Ver todas</a>
+        </div>
+        
+        {% if responses %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Género</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edad</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Localidad</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Intendente</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for response in responses %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ response.submission_timestamp.strftime('%d/%m/%Y %H:%M') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ response.genero or '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ response.edad or '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ response.localidad or '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    {{ response.intendente or '-' }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button onclick="toggleDetails('response-{{ response.id }}')" class="text-blue-600 hover:text-blue-900">
+                                        Ver detalles
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr id="response-{{ response.id }}" class="hidden bg-gray-50">
+                                <td colspan="6" class="px-6 py-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-600">Balotaje:</p>
+                                            <p class="text-sm text-gray-800">{{ response.balotaje or '-' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-600">Estado:</p>
+                                            <p class="text-sm text-gray-800">{{ response.estado or '-' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-600">Partido vs Persona:</p>
+                                            <p class="text-sm text-gray-800">{{ response.partido_vs_persona or '-' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-600">Percepción Mario:</p>
+                                            <p class="text-sm text-gray-800">{{ response.percepcion_mario or '-' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-600">Percepción Daniel:</p>
+                                            <p class="text-sm text-gray-800">{{ response.percepcion_daniel or '-' }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-600">Teléfono:</p>
+                                            <p class="text-sm text-gray-800">{{ response.telefono or '-' }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8">
+                <p class="text-gray-500">No hay respuestas de encuesta disponibles.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleDetails(id) {
+        const element = document.getElementById(id);
+        if (element.classList.contains('hidden')) {
+            element.classList.remove('hidden');
+        } else {
+            element.classList.add('hidden');
+        }
+    }
+</script>
+{% endblock %}

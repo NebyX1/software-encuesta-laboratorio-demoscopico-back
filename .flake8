@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 140
+
+per-file-ignores =
+    run.py: F401
