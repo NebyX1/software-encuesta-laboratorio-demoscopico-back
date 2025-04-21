@@ -22,3 +22,6 @@ Paso 7: Realizar modificaciones en la migración
 
 Paso 8: Efectivizar la migración:
     >flask --app app.py db upgrade
+
+Paso 9: Crear usuarios
+    >python user_manager.py create mail "Username"
